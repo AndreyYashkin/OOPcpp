@@ -1,9 +1,8 @@
-#ifndef FACTORY_HPP
-#define FACTORY_HPP
+#pragma once
 
 
-#include "Shape.hpp"
-#include "My_forward_list.hpp"
+#include "Shape.h"
+#include "My_forward_list.h"
 #include <random>
 
 
@@ -44,7 +43,7 @@ Shape* random_factory(const std::string &type)//заданный тип
         My_forward_list<Point> a= My_forward_list<Point>();
         int n=gen_num(rd);
         for(int i=0; i<n; i++)
-            a.m_add_in_beginning(Point(gen_coord(rd), gen_coord(rd)));
+            a.add_in_beginning(Point(gen_coord(rd), gen_coord(rd)));
         return new Polyline(a);
     }
     else if(type == std::string("Polygon"))
@@ -52,12 +51,11 @@ Shape* random_factory(const std::string &type)//заданный тип
         My_forward_list<Point> a= My_forward_list<Point>();
         int n=gen_num(rd);
         for(int i=0; i<n; i++)
-            a.m_add_in_beginning(Point(gen_coord(rd), gen_coord(rd)));
+            a.add_in_beginning(Point(gen_coord(rd), gen_coord(rd)));
         return new Polygon(a);
     } 
     else
         return NULL;
 }
 
-#endif /* FACTORY_HPP */
 
