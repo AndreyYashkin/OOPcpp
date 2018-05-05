@@ -2,10 +2,10 @@
 #include <iostream>
 #include <random>
 
-#include "My_forward_list.hpp"
-#include "MyForwardIterator.hpp"
-#include "Shape.hpp"
-#include "factory.hpp"
+#include "My_forward_list.h"
+#include "MyForwardIterator.h"
+#include "Shape.h"
+#include "factory.h"
 
 using namespace std;
 
@@ -15,9 +15,6 @@ typedef MyForwardIterator<Shape*> list_iterator;
 
 int main(int argc, char** argv)
 {
-    Shape * qq = new Square(Point(2, 3), Point(6, 3));
-    cout << *qq;
-    
     std::random_device rd;
     std::uniform_int_distribution<int> gen_type(0, 5);
     
@@ -28,35 +25,35 @@ int main(int argc, char** argv)
         {
             int job=gen_type(rd);
             if(job == 0)
-                shapes_list.m_add_in_ending(random_factory(std::string("Point")));
+                shapes_list.add_in_ending(random_factory(std::string("Point")));
             else if(job == 1)
-                shapes_list.m_add_in_ending(random_factory(std::string("Circle")));
+                shapes_list.add_in_ending(random_factory(std::string("Circle")));
             else if(job == 2)
-                shapes_list.m_add_in_ending(random_factory(std::string("Rect")));
+                shapes_list.add_in_ending(random_factory(std::string("Rect")));
             else if(job == 3)
-                shapes_list.m_add_in_ending(random_factory(std::string("Square")));
+                shapes_list.add_in_ending(random_factory(std::string("Square")));
             else if(job == 4)
-                shapes_list.m_add_in_ending(random_factory(std::string("Polyline")));
+                shapes_list.add_in_ending(random_factory(std::string("Polyline")));
             else //if(job == 5)
-                shapes_list.m_add_in_ending(random_factory(std::string("Polygon")));
+                shapes_list.add_in_ending(random_factory(std::string("Polygon")));
         }
-        std::cout << "Shape::GetCount()=" << Shape::m_get_counter() << '\n' << "INFO\n";
-        list_iterator i(shapes_list.m_get_beginning());
-        while(i != shapes_list.m_get_ending())
+        std::cout << "Shape::GetCount()=" << Shape::get_counter() << '\n' << "INFO\n";
+        list_iterator i(shapes_list.get_beginning());
+        while(i != shapes_list.get_ending())
         {
-            std::cout << (*(i))->m_get_info() << '\n';
+            std::cout << (*(i))->get_info() << '\n';
             i++;
         }
-        std::cout << (*i)->m_get_info() << '\n';    
+        std::cout << (*i)->get_info() << '\n';    
         //очищаем память ручками т.к у нас список указателей
-        i=shapes_list.m_get_beginning();
-        while(i != shapes_list.m_get_ending())
+        i=shapes_list.get_beginning();
+        while(i != shapes_list.get_ending())
         {
             delete *i;
             i++;
         }
         delete *i;
-        std::cout << "Shape::GetCount()=" << Shape::m_get_counter() << '\n';    
+        std::cout << "Shape::GetCount()=" << Shape::get_counter() << '\n';    
     }
     catch(My_forward_list_errors err)
     {
