@@ -11,7 +11,7 @@
 #include "error_types.h"
 
 
-class Shape
+class Shape: public Printable
 {
 public:
     virtual ~Shape()
