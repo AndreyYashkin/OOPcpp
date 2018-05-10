@@ -6,11 +6,12 @@
 #include <cmath>
 
 #include "Printable.h"
+#include "Named.h"
 #include "My_forward_list.h"
 #include "error_types.h"
 
 
-class Shape: public Printable
+class Shape
 {
 public:
     virtual ~Shape()
@@ -24,10 +25,8 @@ public:
     {
         return sm_counter;
     }
-    friend std::ostream& operator << (std::ostream &s,  Shape const &a)
-    {
-        return s << a.get_info();
-    }
+    
+    
 protected:
     Shape()
     {
@@ -38,21 +37,21 @@ private:
 };
 
 
-class Point: public Shape
+class Point:  public Shape,  public Named
 {
 public:
-    Point(double _x, double _y): m_x(_x), m_y(_y)
+    Point(double _x, double _y): Named("Point"), m_x(_x), m_y(_y)
     {
     }
     
-    Point(Point const& orig): m_x(orig.m_x), m_y(orig.m_y)
+    Point(Point const& orig): Named("Point"), m_x(orig.m_x), m_y(orig.m_y)
     {  
     }
     
     virtual std::string get_info() const
     {
         std::stringstream ss;
-        ss << "Point\nCoordinates: (" << m_x << ", " << m_y << ")\n";
+        ss << get_name() << "\nCoordinates: (" << m_x << ", " << m_y << ")\n";
         return ss.str();
     }
     
@@ -79,10 +78,10 @@ private:
     double m_x, m_y;
 };
 
-class Circle: public Shape
+class Circle: public Shape, public Named
 {
 public:
-    Circle(Point const& c, double _r) throw(Shape_errors): m_cen(c), m_r(_r) 
+    Circle(Point const& c, double _r) throw(Shape_errors): Named("Circle"), m_cen(c), m_r(_r) 
     {
         if(m_r<=0)
             throw WRONG_PARAMETERS_FOR_CIRCLE;
@@ -91,7 +90,7 @@ public:
     virtual std::string get_info() const
     {
         std::stringstream ss;
-        ss << "Circle\nCenter coordinates: (" << m_cen.get_x() << ", " << m_cen.get_y() << ")\nR=" << m_r << "\nL=" << 2*M_PI*m_r << "\nS=" << M_PI*m_r*m_r << "\n";
+        ss << get_name() << "\nCenter coordinates: (" << m_cen.get_x() << ", " << m_cen.get_y() << ")\nR=" << m_r << "\nL=" << 2*M_PI*m_r << "\nS=" << M_PI*m_r*m_r << "\n";
         return ss.str();
     }
     friend std::ostream& operator << (std::ostream &s,  Circle const &a)
@@ -103,10 +102,10 @@ private:
     double m_r;
 };
 
-class Rect: public Shape
+class Rect: public Shape, public Named
 {
 public:
-    Rect(Point const& _a, Point const& _b) throw(Shape_errors): m_a(_a), m_b(_b)
+    Rect(Point const& _a, Point const& _b) throw(Shape_errors): Named("Rect"), m_a(_a), m_b(_b)
     {
         if(m_a.get_x()==m_b.get_x() || m_a.get_y()==m_b.get_y())
             throw WRONG_PARAMETERS_FOR_RECT;
@@ -115,7 +114,7 @@ public:
     virtual std::string get_info() const//вывести b, d
     {
         std::stringstream ss;
-        ss << "Rect\nCoordinates s: a=(" << m_a.get_x() << ", " << m_a.get_y() << "), c=(" << m_b.get_x() << ", " << m_b.get_y() << ")\n";
+        ss << get_name() << "\nCoordinates s: a=(" << m_a.get_x() << ", " << m_a.get_y() << "), c=(" << m_b.get_x() << ", " << m_b.get_y() << ")\n";
         ss << "L=" << 2*fabs(m_a.get_x()-m_b.get_x())+2*fabs(m_a.get_y()-m_b.get_y()) << "\n";
         ss << "S=" << fabs((m_a.get_x()-m_b.get_x())*(m_a.get_y()-m_b.get_y())) << "\n";
         return ss.str();
@@ -129,10 +128,10 @@ private:
     Point m_a, m_b;
 };
 
-class Square: public Shape
+class Square: public Shape, public Named
 {
 public:
-    Square(Point const& _a, Point const& _b) throw(Shape_errors): m_a(_a), m_b(_b)
+    Square(Point const& _a, Point const& _b) throw(Shape_errors): Named("Square"), m_a(_a), m_b(_b)
     {
         if(m_a.get_x()==m_b.get_x() && m_a.get_y()==m_b.get_y())
             throw WRONG_PARAMETERS_FOR_SQUARE;
@@ -145,7 +144,7 @@ public:
          * чисто аналит. геометрия
          * Да, формулы скучные, не отличные от формул в Rect
          */
-        ss << "Square\nCoordinates s: a=(" << m_a.get_x() << ", " << m_a.get_y() <<
+        ss << get_name() << "\nCoordinates s: a=(" << m_a.get_x() << ", " << m_a.get_y() <<
                 "), b=(" << (m_a.get_x()+m_b.get_x())/2 + (m_a.get_y()-m_b.get_y())/2 << ", " << (m_a.get_y()+m_b.get_y())/2 - (m_a.get_x()-m_b.get_x())/2 <<
                 "), c=(" << m_b.get_x() << ", " << m_b.get_y() <<
                 "), d=(" << (m_a.get_x()+m_b.get_x())/2 - (m_a.get_y()-m_b.get_y())/2 << ", " << (m_a.get_y()+m_b.get_y())/2 + (m_a.get_x()-m_b.get_x())/2 << ")\n";//восстанавливаем еще 2 точки 
@@ -162,20 +161,21 @@ private:
     Point m_a, m_b;
 };
 
-class Polyline : public Shape
+class Polyline : public Shape, public Named
 {
 public:
-    Polyline(): m_points()
+    Polyline(): Named("Polyline"), m_points()
     {
     }
-    Polyline(My_forward_list<Point> const &l): m_points(l)
+    
+    Polyline(My_forward_list<Point> const &l): Named("Polyline"), m_points(l)
     {
     }
     
     virtual std::string get_info() const
     {
         std::stringstream ss;
-        ss << "Polyline\n";
+        ss << get_name() << '\n';
         if(m_points.is_empty())
         {
             ss  << "Vershin net\nL=0\n";
@@ -214,17 +214,17 @@ private:
     My_forward_list<Point> m_points;
 };
 
-class Polygon: public Shape
+class Polygon: public Shape, public Named
 {
 public:
-    Polygon(My_forward_list<Point> const &l): m_points(l)
+    Polygon(My_forward_list<Point> const &l): Named("Polygon"), m_points(l)
     { 
     }
 
     virtual std::string get_info() const
     {
         std::stringstream ss;
-        ss << "Polygon\n";
+        ss << get_name() << '\n';
         if(m_points.is_empty())
         {
             ss  << "Vershin net\nL=0\n";
